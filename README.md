@@ -1,10 +1,13 @@
-## Low-level input logger for Go (for Windows)
+## Low-level input logger
 
 ---
 
 ### About inputlogger
 
-- Use inputlogger to capture low-level input events from keyboard or mouse (for Windows).
+- Use inputlogger to capture low-level input events from keyboard or mouse.
+- Works only for Windows.
+
+---
 
 ### Example
 
@@ -14,28 +17,28 @@
 package main
 
 import (
-	"fmt"
-	"github.com/jeet-parekh/inputlogger"
+    "fmt"
+    "github.com/jeet-parekh/inputlogger"
 )
 
 func main() {
-	keyboardLogger := inputlogger.NewKeyboardLogger(4, map[uintptr]bool { inputlogger.WM_KEYDOWN:true })
-	keyboardMessages := keyboardLogger.GetMessageChannel()
-	keyboardLogger.Start()
+    keyboardLogger := inputlogger.NewKeyboardLogger(4, map[uintptr]bool { inputlogger.WM_KEYDOWN:true })
+    keyboardEvents := keyboardLogger.GetMessageChannel()
+    keyboardLogger.Start()
 
-	for i := 0; i < 20; i++ {
-		fmt.Printf("%+v\n", <- keyboardMessages)
-	}
-	keyboardLogger.Stop()
+    for i := 0; i < 20; i++ {
+        fmt.Printf("%+v\n", <- keyboardEvents)
+    }
+    keyboardLogger.Stop()
 
-	mouseLogger := inputlogger.NewMouseLogger(4, map[uintptr]bool { inputlogger.WM_MOUSEMOVE:true })
-	mouseMessages := mouseLogger.GetMessageChannel()
-	mouseLogger.Start()
+    mouseLogger := inputlogger.NewMouseLogger(4, map[uintptr]bool { inputlogger.WM_MOUSEMOVE:true })
+    mouseEvents := mouseLogger.GetMessageChannel()
+    mouseLogger.Start()
 
-	for i := 0; i < 20; i++ {
-		fmt.Printf("%+v\n", <- mouseMessages)
-	}
-	mouseLogger.Stop()
+    for i := 0; i < 20; i++ {
+        fmt.Printf("%+v\n", <- mouseEvents)
+    }
+    mouseLogger.Stop()
 }
 ```
 

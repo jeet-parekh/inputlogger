@@ -7,8 +7,8 @@ import (
 )
 
 type (
-	// MouseMessage contains information about a low-level mouse input event.
-	MouseMessage struct {
+	// MouseEvent contains information about a low-level mouse input event.
+	MouseEvent struct {
 		Flags uint32
 		MessageID uint32
 		MouseData uint32
@@ -17,11 +17,11 @@ type (
 		CursorY int32
 	}
 
-	// MouseLogger provides an interface to receive MouseMessages.
+	// MouseLogger provides an interface to receive MouseEvents.
 	MouseLogger struct {
 		callbackFunction func(int32, uintptr, uintptr) uintptr
 		hook uintptr
-		messages chan *MouseMessage
+		messages chan *MouseEvent
 		targetMessages map[uintptr]bool
 	}
 )
@@ -32,7 +32,7 @@ type (
 func NewMouseLogger(bufferSize uint, targetMessages map[uintptr]bool) *MouseLogger {
 	// Create a MouseLogger, assign it target messages and a callback function.
 	logger := &MouseLogger {
-		messages : make(chan *MouseMessage, bufferSize),
+		messages : make(chan *MouseEvent, bufferSize),
 		targetMessages : make(map[uintptr]bool),
 	}
 
@@ -47,7 +47,7 @@ func NewMouseLogger(bufferSize uint, targetMessages map[uintptr]bool) *MouseLogg
 	callbackFunction := func(nCode int32, wParam uintptr, lParam uintptr) uintptr {
 		if logger.targetMessages[wParam] {
 			llMsg := (*winapi.MSLLHOOKSTRUCT)(unsafe.Pointer(lParam))
-			logger.messages <- &MouseMessage {
+			logger.messages <- &MouseEvent {
 				Flags : llMsg.Flags,
 				MessageID : uint32(wParam),
 				MouseData : llMsg.MouseData,
@@ -66,8 +66,8 @@ func NewMouseLogger(bufferSize uint, targetMessages map[uintptr]bool) *MouseLogg
 	return logger
 }
 
-// GetMessageChannel returns the channel through which messages would be sent.
-func (logger *MouseLogger) GetMessageChannel() <-chan *MouseMessage {
+// GetMessageChannel returns the channel through which the messages would be sent.
+func (logger *MouseLogger) GetMessageChannel() <-chan *MouseEvent {
 	return logger.messages
 }
 

@@ -7,8 +7,8 @@ import (
 )
 
 type (
-	// KeyboardMessage contains information about a low-level keyboard input event.
-	KeyboardMessage struct {
+	// KeyboardEvent contains information about a low-level keyboard input event.
+	KeyboardEvent struct {
 		Flags uint32
 		MessageID uint32
 		ScanCode uint32
@@ -16,11 +16,11 @@ type (
 		VirtualKeyCode uint32
 	}
 
-	// KeyboardLogger provides an interface to receive KeyboardMessages.
+	// KeyboardLogger provides an interface to receive KeyboardEvents.
 	KeyboardLogger struct {
 		callbackFunction func(int32, uintptr, uintptr) uintptr
 		hook uintptr
-		messages chan *KeyboardMessage
+		messages chan *KeyboardEvent
 		targetMessages map[uintptr]bool
 	}
 )
@@ -31,7 +31,7 @@ type (
 func NewKeyboardLogger(bufferSize uint, targetMessages map[uintptr]bool) *KeyboardLogger {
 	// Create a KeyboardLogger, assign it target messages and a callback function.
 	logger := &KeyboardLogger {
-		messages : make(chan *KeyboardMessage, bufferSize),
+		messages : make(chan *KeyboardEvent, bufferSize),
 		targetMessages : make(map[uintptr]bool),
 	}
 
@@ -43,7 +43,7 @@ func NewKeyboardLogger(bufferSize uint, targetMessages map[uintptr]bool) *Keyboa
 	callbackFunction := func(nCode int32, wParam uintptr, lParam uintptr) uintptr {
 		if logger.targetMessages[wParam] {
 			llMsg := (*winapi.KBDLLHOOKSTRUCT)(unsafe.Pointer(lParam))
-			logger.messages <- &KeyboardMessage {
+			logger.messages <- &KeyboardEvent {
 				Flags : llMsg.Flags,
 				MessageID : uint32(wParam),
 				ScanCode : llMsg.ScanCode,
@@ -61,8 +61,8 @@ func NewKeyboardLogger(bufferSize uint, targetMessages map[uintptr]bool) *Keyboa
 	return logger
 }
 
-// GetMessageChannel returns the channel through which messages would be sent.
-func (logger *KeyboardLogger) GetMessageChannel() <-chan *KeyboardMessage {
+// GetMessageChannel returns the channel through which the messages would be sent.
+func (logger *KeyboardLogger) GetMessageChannel() <-chan *KeyboardEvent {
 	return logger.messages
 }
 
