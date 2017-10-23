@@ -28,7 +28,7 @@ type (
 
 // NewMouseLogger creates and returns a MouseLogger.
 // First parameter is the buffer size of the channel through which the messages would be sent.
-// Second parameter is a MessageID <-> bool map. Receive = true, Ignore = false.
+// Second parameter is a MessageID -> bool map. Receive = true, Ignore = false.
 func NewMouseLogger(bufferSize uint, targetMessages map[uintptr]bool) *MouseLogger {
 	// Create a MouseLogger, assign it target messages and a callback function.
 	logger := &MouseLogger {
@@ -85,9 +85,9 @@ func (logger *MouseLogger) Start() {
 	}()
 }
 
-// Stop the MouseLogger.
+// Stop the MouseLogger and close the message channel.
 func (logger *MouseLogger) Stop() {
-	// Remove the low-level hook, and close the messages channel.
+	// Remove the low-level hook, and close the message channel.
 	_, err := winapi.UnhookWindowsHookEx(logger.hook)
 	if err.Error() != _SUCCESS { panic(err.Error()) }
 	close(logger.messages)
