@@ -19,23 +19,23 @@ import (
 )
 
 func main() {
-	kl := inputlogger.NewKeyboardLogger(4, map[uintptr]bool { inputlogger.WM_KEYDOWN:true })
-	kch := kl.GetMessageChannel()
-	kl.Start()
+	keyboardLogger := inputlogger.NewKeyboardLogger(4, map[uintptr]bool { inputlogger.WM_KEYDOWN:true })
+	keyboardMessages := keyboardLogger.GetMessageChannel()
+	keyboardLogger.Start()
 
 	for i := 0; i < 20; i++ {
-		fmt.Printf("%+v\n", <- kch)
+		fmt.Printf("%+v\n", <- keyboardMessages)
 	}
-	kl.Stop()
+	keyboardLogger.Stop()
 
-	ml := inputlogger.NewMouseLogger(4, map[uintptr]bool { inputlogger.WM_MOUSEMOVE:true })
-	mch := ml.GetMessageChannel()
-	ml.Start()
+	mouseLogger := inputlogger.NewMouseLogger(4, map[uintptr]bool { inputlogger.WM_MOUSEMOVE:true })
+	mouseMessages := mouseLogger.GetMessageChannel()
+	mouseLogger.Start()
 
 	for i := 0; i < 20; i++ {
-		fmt.Printf("%+v\n", <- mch)
+		fmt.Printf("%+v\n", <- mouseMessages)
 	}
-	ml.Stop()
+	mouseLogger.Stop()
 }
 ```
 
