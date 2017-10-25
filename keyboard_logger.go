@@ -53,7 +53,7 @@ func NewKeyboardLogger(bufferSize uint, targetMessages map[uintptr]bool) *Keyboa
 		}
 
 		r1, err := winapi.CallNextHookEx(0, nCode, wParam, lParam)
-		if err.Error() != _SUCCESS { panic(err.Error()) }
+		if err.Error() != _SUCCESS { panic(err) }
 		return r1
 	}
 	logger.callbackFunction = callbackFunction
@@ -71,7 +71,7 @@ func (logger *KeyboardLogger) Start() {
 	// Set the low-level keyboard hook, and start a goroutine which never terminates.
 	var err error
 	logger.hook, err = winapi.SetWindowsHookEx(_WH_KEYBOARD_LL, windows.NewCallback(logger.callbackFunction), 0, 0)
-	if err.Error() != _SUCCESS { panic(err.Error()) }
+	if err.Error() != _SUCCESS { panic(err) }
 
 	go func() {
 		for {
@@ -84,6 +84,6 @@ func (logger *KeyboardLogger) Start() {
 func (logger *KeyboardLogger) Stop() {
 	// Remove the low-level hook, and close the message channel.
 	_, err := winapi.UnhookWindowsHookEx(logger.hook)
-	if err.Error() != _SUCCESS { panic(err.Error()) }
+	if err.Error() != _SUCCESS { panic(err) }
 	close(logger.messages)
 }

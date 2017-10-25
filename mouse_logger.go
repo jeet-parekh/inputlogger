@@ -58,7 +58,7 @@ func NewMouseLogger(bufferSize uint, targetMessages map[uintptr]bool) *MouseLogg
 		}
 
 		r1, err := winapi.CallNextHookEx(0, nCode, wParam, lParam)
-		if err.Error() != _SUCCESS { panic(err.Error()) }
+		if err.Error() != _SUCCESS { panic(err) }
 		return r1
 	}
 	logger.callbackFunction = callbackFunction
@@ -76,7 +76,7 @@ func (logger *MouseLogger) Start() {
 	// Set the low-level mouse hook, and start a goroutine which never terminates.
 	var err error
 	logger.hook, err = winapi.SetWindowsHookEx(_WH_MOUSE_LL, windows.NewCallback(logger.callbackFunction), 0, 0)
-	if err.Error() != _SUCCESS { panic(err.Error()) }
+	if err.Error() != _SUCCESS { panic(err) }
 
 	go func() {
 		for {
@@ -89,6 +89,6 @@ func (logger *MouseLogger) Start() {
 func (logger *MouseLogger) Stop() {
 	// Remove the low-level hook, and close the message channel.
 	_, err := winapi.UnhookWindowsHookEx(logger.hook)
-	if err.Error() != _SUCCESS { panic(err.Error()) }
+	if err.Error() != _SUCCESS { panic(err) }
 	close(logger.messages)
 }
