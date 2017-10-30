@@ -2,10 +2,11 @@
 
 ---
 
-### About inputlogger
+### About `inputlogger`
 
-- Use inputlogger to capture low-level input events from keyboard or mouse.
+- Use `inputlogger` to capture low-level input events from keyboard or mouse.
 - Works only for Windows.
+- [Documentation: godoc](https://godoc.org/github.com/jeet-parekh/inputlogger)
 
 ---
 
